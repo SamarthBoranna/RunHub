@@ -53,6 +53,20 @@ def get_athlete():
         return jsonify(session["athlete"])
     return jsonify({"error": "Unauthorized"}), 401
 
+@app.route("/api/recentActivities")
+def get_recent_activities():
+    if "athlete" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Gets the most recent 200 activities
+    activities_url = "https://www.strava.com/api/v3/athlete/activities"
+    header = {'Authorization': 'Bearer ' + session["access_token"]}
+    param = {'per_page': 200, 'page': 1}
+    activities = requests.get(activities_url, headers = header, params = param).json()
+    runs = [activity for activity in activities if activity['type'] == 'Run']
+    return jsonify(runs)
+
+
 
 if __name__ == "__main__":
     app.run(host="localhost", debug=True, port=5050)
