@@ -4,7 +4,7 @@ import Dashboard from "../components/Dashboard";
 export default function Runs() {
   return (
     <div>
-        <ActivitiesCard />
+      <ActivitiesCard />
     </div>
   );
 }

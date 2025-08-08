@@ -66,7 +66,5 @@ def get_recent_activities():
     runs = [activity for activity in activities if activity['type'] == 'Run']
     return jsonify(runs)
 
-
-
 if __name__ == "__main__":
     app.run(host="localhost", debug=True, port=5050)

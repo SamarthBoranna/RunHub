@@ -5,9 +5,7 @@ import Badges from "./pages/Badges";
 import Heatmap from "./pages/Heatmap";
 import Dashboard from "./components/Dashboard";
 
-
 function App() {
-
   return (
     <Router>
       <Dashboard />
@@ -20,7 +18,7 @@ function App() {
         </Routes>
       </div>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
