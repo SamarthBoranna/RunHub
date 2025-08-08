@@ -1,5 +1,5 @@
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Button} from "@heroui/react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {User} from "@heroui/react";
 import { useEffect, useState } from "react";
 
@@ -15,22 +15,25 @@ function Dashboard() {
         .then((data) => setAthlete(data));
     }, [])
 
+    const navLinkClass = ({ isActive }) =>
+        isActive ? "text-primary font-medium" : "text-foreground"
+
   return (
     <Navbar>
         <NavbarBrand>
-            <Link color="foreground" to="/">
+            <NavLink color="foreground" to="/">
                 <p className="text-2xl font-medium text-inherit"> RunHub</p>
-            </Link>
+            </NavLink>
         </NavbarBrand>
         <NavbarContent className="hidden sm: flex gap-4" justify="center">
             <NavbarItem>
-                <Link color="foreground" to="/runs">Runs</Link>
+                <NavLink to="/runs" className={navLinkClass}>Runs</NavLink>
             </NavbarItem>
             <NavbarItem>
-                <Link color="foreground" to="/badges">Badges</Link>
+                <NavLink to="/badges" className={navLinkClass}>Badges</NavLink>
             </NavbarItem>
             <NavbarItem>
-                <Link color="foreground" to="/heatmap">Heatmap</Link>
+                <NavLink to="/heatmap" className={navLinkClass}>Heatmap</NavLink>
             </NavbarItem>
         </NavbarContent>
 
