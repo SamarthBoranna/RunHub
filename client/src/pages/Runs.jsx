@@ -3,7 +3,7 @@ import Dashboard from "../components/Dashboard";
 
 export default function Runs() {
   return (
-    <div>
+    <div className="w-full px-6">
       <ActivitiesCard />
     </div>
   );
