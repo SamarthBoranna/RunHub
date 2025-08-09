@@ -1,10 +1,17 @@
 import ActivitiesCard from "../components/ActivitiesCard";
-import Dashboard from "../components/Dashboard";
+import WeeklyMetrics from "../components/WeeklyMetrics";
 
 export default function Runs() {
   return (
-    <div className="w-full px-6">
-      <ActivitiesCard />
+    <div className="px-6">
+      <div className="flex gap-6">
+        <div className="w-1/2">
+          <ActivitiesCard />
+        </div>
+        <div className="w-1/2">
+          <WeeklyMetrics />
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,14 +8,18 @@ import Dashboard from "./components/Dashboard";
 function App() {
   return (
     <Router>
-      <Dashboard />
-      <div className="p-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/runs" element={<Runs />} />
-          <Route path="/badges" element={<Badges />} />
-          <Route path="/heatmap" element={<Heatmap />} />
-        </Routes>
+      <div className="min-h-screen flex flex-col">
+        <Dashboard className="w-auto px-6" />
+        <main className="flex-1 container mx-auto">
+          <div>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/runs" element={<Runs />} />
+              <Route path="/badges" element={<Badges />} />
+              <Route path="/heatmap" element={<Heatmap />} />
+            </Routes>
+          </div>
+        </main>
       </div>
     </Router>
   );

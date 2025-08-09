@@ -25,51 +25,52 @@ function Dashboard() {
 
   return (
     <Navbar>
-      <NavbarBrand>
-        <NavLink color="foreground" to="/">
-          <p className="text-2xl font-medium text-inherit"> RunHub</p>
-        </NavLink>
-      </NavbarBrand>
-      <NavbarContent className="hidden sm: flex gap-4" justify="center">
-        <NavbarItem>
-          <NavLink to="/runs" className={navLinkClass}>
-            Runs
+      <div className="w-full flex items-center justify-between">
+        <NavbarBrand>
+          <NavLink color="foreground" to="/">
+            <p className="text-2xl font-medium text-inherit">RunHub</p>
           </NavLink>
-        </NavbarItem>
-        <NavbarItem>
-          <NavLink to="/badges" className={navLinkClass}>
-            Badges
-          </NavLink>
-        </NavbarItem>
-        <NavbarItem>
-          <NavLink to="/heatmap" className={navLinkClass}>
-            Heatmap
-          </NavLink>
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent justify="end">
-        <NavbarItem>
-          {athlete && athlete.firstname ? (
-            <User
-              avatarProps={{
-                src: athlete.profile,
-              }}
-              description={athlete.username}
-              name={athlete.firstname + " " + athlete.lastname}
-            />
-          ) : (
-            <Button
-              as={Link}
-              color="primary"
-              to="http://localhost:5050/authorize"
-              variant="flat"
-            >
-              Login with Strava
-            </Button>
-          )}
-        </NavbarItem>
-      </NavbarContent>
+        </NavbarBrand>
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+          <NavbarItem>
+            <NavLink to="/runs" className={navLinkClass}>
+              Runs
+            </NavLink>
+          </NavbarItem>
+          <NavbarItem>
+            <NavLink to="/badges" className={navLinkClass}>
+              Badges
+            </NavLink>
+          </NavbarItem>
+          <NavbarItem>
+            <NavLink to="/heatmap" className={navLinkClass}>
+              Heatmap
+            </NavLink>
+          </NavbarItem>
+        </NavbarContent>
+        <NavbarContent justify="end">
+          <NavbarItem>
+            {athlete && athlete.firstname ? (
+              <User
+                avatarProps={{
+                  src: athlete.profile,
+                }}
+                description={athlete.username}
+                name={athlete.firstname + " " + athlete.lastname}
+              />
+            ) : (
+              <Button
+                as={Link}
+                color="primary"
+                to="http://localhost:5050/authorize"
+                variant="flat"
+              >
+                Login with Strava
+              </Button>
+            )}
+          </NavbarItem>
+        </NavbarContent>
+      </div>
     </Navbar>
   );
 }
