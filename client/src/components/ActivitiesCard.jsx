@@ -1,6 +1,7 @@
 import { Pagination, Button, Link, Card, CardBody } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useActivities } from "./ActivitiesContext";
+import { RotateCw } from "lucide-react";
 
 // Helper function to calculate pace
 const calculatePace = (distance, time) => {
@@ -25,7 +26,7 @@ function ActivitiesCard() {
   if (!isAuthorized) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Recent Runs</h1>
+        <h1 className="text-2xl mb-6">Recent Runs</h1>
         <p className="text-gray-500 mb-4">
           You must authorize Strava to access your activities.
         </p>
@@ -69,9 +70,13 @@ function ActivitiesCard() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl">Recent Runs</h1>
-        <Button color="primary" variant="flat" onClick={fetchActivities}>
+        {/* <Button color="primary" variant="flat" onClick={fetchActivities}>
           Refresh
-        </Button>
+        </Button> */}
+        <RotateCw
+          className="h-5 w-5 text-primary cursor-pointer hover:rotate-90 transition-transform duration-300"
+          onClick={fetchActivities}
+        />
       </div>
       <div className="space-y-4 mb-4">
         {paginatedRuns.map((run) => (

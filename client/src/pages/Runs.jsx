@@ -5,10 +5,10 @@ export default function Runs() {
   return (
     <div className="px-6">
       <div className="flex gap-6">
-        <div className="w-1/2">
+        <div className="w-2/3">
           <ActivitiesCard />
         </div>
-        <div className="w-1/2">
+        <div className="w-1/3">
           <WeeklyMetrics />
         </div>
       </div>
