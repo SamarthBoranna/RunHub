@@ -3,7 +3,7 @@ from flask_cors import CORS
 import requests, os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=".env.local")
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 CORS(app, origins='http://localhost:5173', supports_credentials=True)
