@@ -1,7 +1,7 @@
 import ActivitiesCard from "../components/ActivitiesCard";
 import WeeklyMetrics from "../components/WeeklyMetrics";
 
-export default function Runs() {
+export default function RunsPage() {
   return (
     <div className="px-6">
       <div className="flex gap-6">

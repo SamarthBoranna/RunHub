@@ -9,7 +9,7 @@ import { Link, NavLink } from "react-router-dom";
 import { User } from "@heroui/react";
 import { useEffect, useState } from "react";
 
-function Dashboard() {
+function NavBar() {
   const [athlete, setAthlete] = useState(null);
 
   useEffect(() => {
@@ -75,4 +75,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default NavBar;

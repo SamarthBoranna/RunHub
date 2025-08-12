@@ -1,22 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Runs from "./pages/Runs";
-import Badges from "./pages/Badges";
-import Heatmap from "./pages/Heatmap";
-import Dashboard from "./components/Dashboard";
+import HomePage from "./pages/HomePage";
+import RunsPage from "./pages/RunsPage";
+import BadgesPage from "./pages/BadgesPage";
+import HeatmapPage from "./pages/HeatmapPage";
+import NavBar from "./components/Navbar";
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-        <Dashboard className="w-auto px-6" />
+        <NavBar className="w-auto px-6" />
         <main className="flex-1 container mx-auto">
           <div>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/runs" element={<Runs />} />
-              <Route path="/badges" element={<Badges />} />
-              <Route path="/heatmap" element={<Heatmap />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/runs" element={<RunsPage />} />
+              <Route path="/badges" element={<BadgesPage />} />
+              <Route path="/heatmap" element={<HeatmapPage />} />
             </Routes>
           </div>
         </main>
