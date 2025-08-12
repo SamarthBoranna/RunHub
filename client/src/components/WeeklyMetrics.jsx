@@ -38,7 +38,8 @@ function WeeklyMetrics() {
       const activityDate = new Date(activity.start_date);
       if (activityDate >= startOfWeek) {
         const dayIndex = activityDate.getDay();
-        weekData[dayIndex].miles += activity.distance / 1609;
+        const index = (dayIndex + 6) % 7; // Adjust to start week on Monday
+        weekData[index].miles += activity.distance / 1609;
       }
     });
 
@@ -65,7 +66,7 @@ function WeeklyMetrics() {
 
       <Card>
         {/* Set a fixed height for the chart */}
-        <CardBody className="h-64">
+        <CardBody className="h-64 overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyData}>
               <XAxis dataKey="day" tick={{ fill: "gray" }} />
