@@ -54,7 +54,7 @@ function Heatmap() {
   }, [activities]);
 
   return (
-    <div className="p-6 w-full h-[600px]">
+    <div className="p-6 w-full" style={{ height: "86vh" }}>
       <Card className="w-full h-full">
         <MapContainer
           center={[0, 0]} // will be overridden by <MapCenterUpdater>
