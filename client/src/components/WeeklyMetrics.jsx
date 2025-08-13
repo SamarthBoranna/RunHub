@@ -38,7 +38,8 @@ function WeeklyMetrics() {
       const activityDate = new Date(activity.start_date);
       if (activityDate >= startOfWeek) {
         const dayIndex = activityDate.getDay();
-        weekData[dayIndex].miles += activity.distance / 1609;
+        const index = (dayIndex + 6) % 7; // Adjust to start week on Monday
+        weekData[index].miles += activity.distance / 1609;
       }
     });
 
@@ -50,14 +51,6 @@ function WeeklyMetrics() {
     .reduce((sum, day) => sum + day.miles, 0)
     .toFixed(2);
 
-  if (!isAuthorized) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl mb-6">Weekly Mileage</h1>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6">
       <h1 className="text-2xl">Weekly Mileage</h1>
@@ -65,7 +58,7 @@ function WeeklyMetrics() {
 
       <Card>
         {/* Set a fixed height for the chart */}
-        <CardBody className="h-64">
+        <CardBody className="h-64 overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyData}>
               <XAxis dataKey="day" tick={{ fill: "gray" }} />

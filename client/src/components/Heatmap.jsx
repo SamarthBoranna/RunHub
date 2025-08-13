@@ -1,6 +1,12 @@
 import "leaflet/dist/leaflet.css";
 import polyline from "@mapbox/polyline";
-import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Polyline,
+  useMap,
+  Tooltip,
+} from "react-leaflet";
 import { useActivities } from "./ActivitiesContext";
 import { useEffect, useMemo } from "react";
 import { Card, Button, Link, Progress } from "@heroui/react";
@@ -39,13 +45,16 @@ function Heatmap() {
     const decoded = activities
       .map((act) =>
         act.map?.summary_polyline
-          ? polyline.decode(act.map.summary_polyline)
+          ? {
+              coords: polyline.decode(act.map.summary_polyline),
+              activityName: act.name,
+            }
           : null
       )
       .filter(Boolean);
 
     // Assume activities[0] is the most recent run
-    const recent = decoded.length > 0 ? decoded[0][0] : [];
+    const recent = decoded.length > 0 ? decoded[0].coords[0] : [];
 
     return {
       decodedPolylines: decoded,
@@ -61,6 +70,11 @@ function Heatmap() {
           zoom={2}
           scrollWheelZoom={true}
           style={{ height: "100%", width: "100%" }}
+          maxBounds={[
+            [-90, -180], // Southwest corner lat,lng
+            [90, 180], // Northeast corner lat,lng
+          ]}
+          maxBoundsViscosity={1.0}
         >
           <TileLayer
             url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
@@ -68,7 +82,7 @@ function Heatmap() {
           />
 
           {/* Draw each polyline */}
-          {decodedPolylines.map((coords, idx) => (
+          {decodedPolylines.map(({ coords, activityName }, idx) => (
             <Polyline
               key={idx}
               positions={coords}
@@ -79,7 +93,11 @@ function Heatmap() {
                 lineJoin: "round",
                 lineCap: "round",
               }}
-            />
+            >
+              <Tooltip sticky direction="top" offset={[0, -10]} opacity={0.9}>
+                {activityName}
+              </Tooltip>
+            </Polyline>
           ))}
           {/* <AutoCenter polylines={decodedPolylines} /> */}
           <MapCenterUpdater coords={recentCoords} />
