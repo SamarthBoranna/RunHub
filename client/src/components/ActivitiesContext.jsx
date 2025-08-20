@@ -8,11 +8,14 @@ export function ActivitiesProvider({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Fetch activities from the database (no refresh)
   const fetchActivities = async () => {
     try {
+      // Use the environment variable API base URL
       const res = await fetch(`${API_BASE}/api/recentActivities`, {
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (!res.ok) {
@@ -23,6 +26,7 @@ export function ActivitiesProvider({ children }) {
 
       const data = await res.json();
       setActivities(data);
+      setIsAuthorized(true);
       return { success: true };
     } catch (error) {
       console.error("Failed to fetch activities:", error);
@@ -32,13 +36,15 @@ export function ActivitiesProvider({ children }) {
     }
   };
 
-  // Refresh activities from Strava and update the database
   const refreshActivities = async () => {
     try {
       setIsRefreshing(true);
 
       const res = await fetch(`${API_BASE}/api/refreshActivities`, {
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (!res.ok) {
@@ -48,12 +54,11 @@ export function ActivitiesProvider({ children }) {
 
       const data = await res.json();
 
-      // Update activities with the refreshed data
       if (data.activities) {
         setActivities(data.activities);
         return {
           success: true,
-          newActivities: data.newActivities,
+          newActivities: data.changes?.added || 0,
         };
       } else {
         return { success: false };

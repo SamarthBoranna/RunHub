@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, request, session
+from flask import Flask, jsonify, redirect, request, session, make_response
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -14,6 +14,8 @@ load_dotenv(dotenv_path=".env.local")
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # Important for cross-domain cookies
 
 # Configure database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
@@ -22,13 +24,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, origins=['http://localhost:5173', 'https://runhub.vercel.app'], supports_credentials=True)
+CORS(app, 
+     origins=['http://localhost:5173', 'https://runhub.vercel.app'], 
+     supports_credentials=True,
+     expose_headers=["Set-Cookie"])
 
 # Strava API credentials
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
 CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+# Add this helper function to set proper cookies for cross-domain
+def set_cookie_and_redirect(response, redirect_url):
+    response = make_response(redirect(redirect_url))
+    response.headers.add('Set-Cookie', f'session={session.sid}; SameSite=None; Secure; Path=/')
+    return response
 
 @app.route("/authorize")
 def authorize():
@@ -91,7 +102,10 @@ def callback():
         # After user is created/updated, fetch their activities
         fetch_and_store_activities(athlete["id"], access_token)
         
-        return redirect(f"{FRONTEND_URL}")
+        # Replace the last line that does the redirect
+        # Instead of: return redirect(frontend_url)
+        # Use:
+        return redirect(FRONTEND_URL)
     
     except Exception as e:
         db.session.rollback()
