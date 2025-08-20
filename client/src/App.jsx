@@ -3,7 +3,7 @@ import HomePage from "./pages/HomePage";
 import RunsPage from "./pages/RunsPage";
 import BadgesPage from "./pages/BadgesPage";
 import HeatmapPage from "./pages/HeatmapPage";
-import NavBar from "./components/Navbar";
+import NavBar from "./components/NavBar";
 
 function App() {
   return (

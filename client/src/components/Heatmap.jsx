@@ -12,6 +12,7 @@ import { useEffect, useMemo } from "react";
 import { Card, Button, Link, Progress } from "@heroui/react";
 
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
 // Component to automatically center the map based on recent coordinates
 function MapCenterUpdater({ coords }) {
@@ -107,7 +108,7 @@ function Heatmap() {
         <div className="flex justify-center mt-4">
           <Button
             as={Link}
-            href="http://localhost:5050/authorize"
+            href={`${API_BASE}/authorize`}
             color="primary"
             size="md"
             variant="flat"

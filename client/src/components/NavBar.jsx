@@ -9,11 +9,13 @@ import { Link, NavLink } from "react-router-dom";
 import { User } from "@heroui/react";
 import { useEffect, useState } from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
+
 function NavBar() {
   const [athlete, setAthlete] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5050/api/athlete", {
+    fetch(`${API_BASE}/api/athlete`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -62,7 +64,7 @@ function NavBar() {
               <Button
                 as={Link}
                 color="primary"
-                to="http://localhost:5050/authorize"
+                to={`${API_BASE}/authorize`}
                 variant="flat"
               >
                 Login with Strava
