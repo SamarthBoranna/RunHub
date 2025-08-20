@@ -5,44 +5,81 @@ const ActivitiesContext = createContext();
 export function ActivitiesProvider({ children }) {
   const [activities, setActivities] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Asynchronous function to fetch activities from the server
+  // Fetch activities from the database (no refresh)
   const fetchActivities = async () => {
     try {
       const res = await fetch("http://localhost:5050/api/recentActivities", {
         credentials: "include",
       });
+
       if (!res.ok) {
         setIsAuthorized(false);
         setActivities([]);
-        return;
+        return { success: false };
       }
-      const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setActivities(data);
-      } else {
-        setActivities([]);
-        setIsAuthorized(false);
-      }
+      const data = await res.json();
+      setActivities(data);
+      return { success: true };
     } catch (error) {
       console.error("Failed to fetch activities:", error);
       setActivities([]);
       setIsAuthorized(false);
+      return { success: false, error };
     }
   };
 
-  // Provides the activities data and loading state to components
+  // Refresh activities from Strava and update the database
+  const refreshActivities = async () => {
+    try {
+      setIsRefreshing(true);
+
+      const res = await fetch("http://localhost:5050/api/refreshActivities", {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        setIsAuthorized(false);
+        return { success: false };
+      }
+
+      const data = await res.json();
+
+      // Update activities with the refreshed data
+      if (data.activities) {
+        setActivities(data.activities);
+        return {
+          success: true,
+          newActivities: data.newActivities,
+        };
+      } else {
+        return { success: false };
+      }
+    } catch (error) {
+      console.error("Failed to refresh activities:", error);
+      return { success: false, error };
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <ActivitiesContext.Provider
-      value={{ activities, isAuthorized, fetchActivities }}
+      value={{
+        activities,
+        isAuthorized,
+        isRefreshing,
+        fetchActivities,
+        refreshActivities,
+      }}
     >
       {children}
     </ActivitiesContext.Provider>
   );
 }
 
-// React hook that provides components access to activities data and loading state
 export function useActivities() {
   return useContext(ActivitiesContext);
 }

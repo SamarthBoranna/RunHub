@@ -6,22 +6,49 @@ import { RotateCw } from "lucide-react";
 // Helper function to calculate pace
 const calculatePace = (distance, time) => {
   const miles = distance / 1609;
-  const minutesPerMile = time / 60 / miles; // Convert seconds to minutes and divide by miles
+  const minutesPerMile = time / 60 / miles;
   const minutes = Math.floor(minutesPerMile);
   const seconds = Math.round((minutesPerMile - minutes) * 60);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`; // Format as MM:SS
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 function ActivitiesCard() {
-  const { activities, isAuthorized, fetchActivities } = useActivities();
+  const {
+    activities,
+    isAuthorized,
+    fetchActivities,
+    refreshActivities,
+    isRefreshing,
+  } = useActivities();
   const [currentPage, setCurrentPage] = useState(1);
+  const [refreshMessage, setRefreshMessage] = useState(null);
   const itemsPerPage = 8;
 
   useEffect(() => {
     if (!activities && isAuthorized) {
       fetchActivities();
     }
-  }, [isAuthorized, fetchActivities]);
+  }, [activities, isAuthorized, fetchActivities]);
+
+  const handleRefresh = async () => {
+    const result = await refreshActivities();
+
+    if (result.success) {
+      if (result.newActivities > 0) {
+        setRefreshMessage(`${result.newActivities} new activities found!`);
+      } else {
+        setRefreshMessage("You're all up to date!");
+      }
+
+      // Reset to first page to show new activities
+      setCurrentPage(1);
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setRefreshMessage(null);
+      }, 3000);
+    }
+  };
 
   if (!isAuthorized) {
     return (
@@ -70,13 +97,19 @@ function ActivitiesCard() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl">Recent Runs</h1>
-        {/* <Button color="primary" variant="flat" onClick={fetchActivities}>
-          Refresh
-        </Button> */}
-        <RotateCw
-          className="h-5 w-5 text-primary cursor-pointer hover:rotate-90 transition-transform duration-300"
-          onClick={fetchActivities}
-        />
+        <div className="flex items-center">
+          {refreshMessage && (
+            <span className="text-sm text-green-600 mr-4">
+              {refreshMessage}
+            </span>
+          )}
+          <RotateCw
+            className={`h-5 w-5 text-primary cursor-pointer hover:rotate-90 transition-transform duration-300 ${
+              isRefreshing ? "animate-spin" : ""
+            }`}
+            onClick={handleRefresh}
+          />
+        </div>
       </div>
       <div className="space-y-4 mb-4">
         {paginatedRuns.map((run) => (
