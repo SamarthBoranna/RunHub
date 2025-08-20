@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useActivities } from "./ActivitiesContext";
 import { RotateCw } from "lucide-react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
+
 // Helper function to calculate pace
 const calculatePace = (distance, time) => {
   const miles = distance / 1609;
@@ -60,7 +62,7 @@ function ActivitiesCard() {
         <Button
           as={Link}
           color="primary"
-          href="http://localhost:5050/authorize"
+          href={`${API_BASE}/authorize`}
           variant="flat"
         >
           Authorize

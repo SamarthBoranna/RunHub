@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, origins='http://localhost:5173', supports_credentials=True)
+CORS(app, origins=['http://localhost:5173', 'https://your-vercel-app-name.vercel.app'], supports_credentials=True)
 
 # Strava API credentials
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")

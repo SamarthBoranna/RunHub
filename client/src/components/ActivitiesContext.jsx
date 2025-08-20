@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 const ActivitiesContext = createContext();
 
 export function ActivitiesProvider({ children }) {
@@ -10,7 +11,7 @@ export function ActivitiesProvider({ children }) {
   // Fetch activities from the database (no refresh)
   const fetchActivities = async () => {
     try {
-      const res = await fetch("http://localhost:5050/api/recentActivities", {
+      const res = await fetch(`${API_BASE}/api/recentActivities`, {
         credentials: "include",
       });
 
@@ -36,7 +37,7 @@ export function ActivitiesProvider({ children }) {
     try {
       setIsRefreshing(true);
 
-      const res = await fetch("http://localhost:5050/api/refreshActivities", {
+      const res = await fetch(`${API_BASE}/api/refreshActivities`, {
         credentials: "include",
       });
 
