@@ -405,4 +405,7 @@ def init_db_command():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # Create tables on startup if they don't exist
-    app.run(host="localhost", debug=True, port=5050)
+    
+    # Use PORT environment variable provided by Render
+    port = int(os.environ.get("PORT", 5050))
+    app.run(host="0.0.0.0", debug=False, port=port)
