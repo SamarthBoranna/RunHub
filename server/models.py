@@ -25,10 +25,6 @@ class User(db.Model):
     # Define relationships
     activities = db.relationship('Activity', backref='user', lazy=True, cascade='all, delete-orphan')
 
-    # API key for user authentication
-    api_key = db.Column(db.String(64), unique=True, index=True,
-                        default=lambda: secrets.token_urlsafe(32))
-
 class Activity(db.Model):
     __tablename__ = 'activities'
     

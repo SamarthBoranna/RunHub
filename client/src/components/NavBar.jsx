@@ -5,25 +5,21 @@ import {
   NavbarItem,
   Button,
 } from "@heroui/react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { User } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useActivities } from "./ActivitiesContext";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
 function NavBar() {
-  const [athlete, setAthlete] = useState(null);
-
-  useEffect(() => {
-    fetch(`${API_BASE}/api/athlete`, {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => setAthlete(data));
-  }, []);
+  const { isAuthorized, userInfo, logout } = useActivities();
 
   const navLinkClass = ({ isActive }) =>
     isActive ? "text-primary font-medium" : "text-foreground";
+
+  const handleLoginClick = () => {
+    window.location.href = `${API_BASE}/authorize`;
+  };
 
   return (
     <Navbar>
@@ -52,21 +48,22 @@ function NavBar() {
         </NavbarContent>
         <NavbarContent justify="end">
           <NavbarItem>
-            {athlete && athlete.firstname ? (
-              <User
-                avatarProps={{
-                  src: athlete.profile,
-                }}
-                description={athlete.username}
-                name={athlete.firstname + " " + athlete.lastname}
-              />
+            {isAuthorized ? (
+              <div className="flex items-center gap-2">
+                {userInfo ? (
+                  <User
+                    avatarProps={{
+                      src: userInfo.profile,
+                    }}
+                    description={userInfo.username}
+                    name={`${userInfo.firstname} ${userInfo.lastname}`}
+                  />
+                ) : (
+                  <span>Strava User</span>
+                )}
+              </div>
             ) : (
-              <Button
-                as={Link}
-                color="primary"
-                to={`${API_BASE}/authorize`}
-                variant="flat"
-              >
+              <Button color="primary" onClick={handleLoginClick} variant="flat">
                 Login with Strava
               </Button>
             )}
