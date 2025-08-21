@@ -1,18 +1,21 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router } from "react-router-dom";
 import { HeroUIProvider } from "@heroui/react";
+import App from "./App";
 import "./index.css";
-import App from "./App.jsx";
 import { ActivitiesProvider } from "./components/ActivitiesContext";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <HeroUIProvider>
-      <ActivitiesProvider>
-        <main>
-          <App />
-        </main>
-      </ActivitiesProvider>
-    </HeroUIProvider>
-  </StrictMode>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <Router>
+      <HeroUIProvider>
+        <ActivitiesProvider>
+          <main>
+            <App />
+          </main>
+        </ActivitiesProvider>
+      </HeroUIProvider>
+    </Router>
+  </React.StrictMode>
 );
