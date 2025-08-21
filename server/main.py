@@ -23,7 +23,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, origins=['http://localhost:5173', 'https://runhub.vercel.app'], supports_credentials=True)
+CORS(app, 
+     origins=['http://localhost:5173', 'https://runhub.vercel.app'], 
+     supports_credentials=True,
+     allow_headers=["Content-Type", "X-API-Key", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
 
 # Strava API credentials
 CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
@@ -128,8 +132,8 @@ def get_athlete(user_id):
         "profile": user.profile
     })
 
-@app.route("/api/recentActivities/<int:user_id>")
-def get_recent_activities(user_id):
+@app.route("/api/activities/<int:user_id>")
+def get_activities(user_id):
     user = authenticate_request(user_id)
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
@@ -218,7 +222,7 @@ def fetch_and_store_activities(athlete_id, access_token, params=None):
     print(f"Added {activities_added} new activities for user {athlete_id}")
     return activities_added
 
-@app.route("/api/refreshActivities/<int:user_id>")
+@app.route("/api/refresh/<int:user_id>")
 def refresh_activities(user_id):
     user = authenticate_request(user_id)
     if not user:
