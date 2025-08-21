@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 const ActivitiesContext = createContext();
@@ -7,30 +7,44 @@ export function ActivitiesProvider({ children }) {
   const [activities, setActivities] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  // Load user ID on component mount
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("runhub_user_id");
+    if (storedUserId) {
+      setUserId(storedUserId);
+    } else {
+      setIsAuthorized(false);
+    }
+  }, []);
 
   const fetchActivities = async () => {
     try {
-      // Use the environment variable API base URL
-      const res = await fetch(`${API_BASE}/api/recentActivities`, {
-        credentials: "include",
+      const apiKey = localStorage.getItem("runhub_api_key");
+      const storedUserId = localStorage.getItem("runhub_user_id");
+
+      if (!apiKey || !storedUserId) {
+        setIsAuthorized(false);
+        return { success: false };
+      }
+
+      const res = await fetch(`${API_BASE}/api/activities/${storedUserId}`, {
         headers: {
-          "Content-Type": "application/json",
+          "X-API-Key": apiKey,
         },
       });
 
       if (!res.ok) {
         setIsAuthorized(false);
-        setActivities([]);
         return { success: false };
       }
 
       const data = await res.json();
       setActivities(data);
-      setIsAuthorized(true);
       return { success: true };
     } catch (error) {
       console.error("Failed to fetch activities:", error);
-      setActivities([]);
       setIsAuthorized(false);
       return { success: false, error };
     }
@@ -40,10 +54,17 @@ export function ActivitiesProvider({ children }) {
     try {
       setIsRefreshing(true);
 
-      const res = await fetch(`${API_BASE}/api/refreshActivities`, {
-        credentials: "include",
+      const apiKey = localStorage.getItem("runhub_api_key");
+      const storedUserId = localStorage.getItem("runhub_user_id");
+
+      if (!apiKey || !storedUserId) {
+        setIsAuthorized(false);
+        return { success: false };
+      }
+
+      const res = await fetch(`${API_BASE}/api/refresh/${storedUserId}`, {
         headers: {
-          "Content-Type": "application/json",
+          "X-API-Key": apiKey,
         },
       });
 
