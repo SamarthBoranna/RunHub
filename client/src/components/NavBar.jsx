@@ -1,13 +1,9 @@
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Button,
-} from "@heroui/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { NavLink } from "react-router-dom";
 import { User } from "@heroui/react";
 import { useActivities } from "./ActivitiesContext";
+import connectWithStravaBtn from "../assets/strava_connect_btn.svg";
+import runhubLogo from "../assets/runhub2.png";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
@@ -22,10 +18,11 @@ function NavBar() {
   };
 
   return (
-    <Navbar>
+    <Navbar isBordered>
       <div className="w-full flex items-center justify-between">
         <NavbarBrand>
-          <NavLink color="foreground" to="/">
+          <NavLink color="foreground" to="/" className="flex items-center">
+            <img src={runhubLogo} alt="RunHub Logo" className="h-12 w-auto" />
             <p className="text-2xl font-medium text-inherit">RunHub</p>
           </NavLink>
         </NavbarBrand>
@@ -63,9 +60,13 @@ function NavBar() {
                 )}
               </div>
             ) : (
-              <Button color="primary" onClick={handleLoginClick} variant="flat">
-                Login with Strava
-              </Button>
+              <div className="cursor-pointer" onClick={handleLoginClick}>
+                <img
+                  src={connectWithStravaBtn}
+                  alt="Connect with Strava"
+                  className="h-8"
+                />
+              </div>
             )}
           </NavbarItem>
         </NavbarContent>

@@ -6,6 +6,7 @@ import RunsPage from "./pages/RunsPage";
 import BadgesPage from "./pages/BadgesPage";
 import HeatmapPage from "./pages/HeatmapPage";
 import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 
 function App() {
   const { setAuthStatus } = useActivities();
@@ -21,7 +22,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar className="w-auto px-6" />
+      <NavBar />
       <main className="flex-1 container mx-auto">
         <div>
           <Routes>
@@ -32,6 +33,7 @@ function App() {
           </Routes>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
