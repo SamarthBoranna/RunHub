@@ -1,4 +1,4 @@
-import { Pagination, Button, Link, Card, CardBody } from "@heroui/react";
+import { Pagination, Card, CardBody } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useActivities } from "./ActivitiesContext";
 import { RotateCw } from "lucide-react";
@@ -59,14 +59,6 @@ function ActivitiesCard() {
         <p className="text-gray-500 mb-4">
           You must authorize Strava to access your activities.
         </p>
-        <Button
-          as={Link}
-          color="primary"
-          href={`${API_BASE}/authorize`}
-          variant="flat"
-        >
-          Authorize
-        </Button>
       </div>
     );
   }
@@ -123,6 +115,14 @@ function ActivitiesCard() {
                   <p className="text-sm text-gray-500">
                     {new Date(run.start_date).toLocaleDateString()}
                   </p>
+                  <a
+                    href={`https://www.strava.com/activities/${run.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-orange-500 font-medium hover:underline"
+                  >
+                    View on Strava
+                  </a>
                 </div>
                 <div className="flex space-x-6 text-right shrink-0">
                   <div>

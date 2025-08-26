@@ -9,7 +9,7 @@ import {
 } from "react-leaflet";
 import { useActivities } from "./ActivitiesContext";
 import { useEffect, useMemo } from "react";
-import { Card, Button, Link, Progress } from "@heroui/react";
+import { Card, Progress } from "@heroui/react";
 
 const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY;
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5050";
@@ -64,7 +64,7 @@ function Heatmap() {
   }, [activities]);
 
   return (
-    <div className="p-6 w-full" style={{ height: "86vh" }}>
+    <div className="p-6 w-full" style={{ height: "84vh" }}>
       <Card className="w-full h-full">
         <MapContainer
           center={[0, 0]} // will be overridden by <MapCenterUpdater>
@@ -104,19 +104,6 @@ function Heatmap() {
           <MapCenterUpdater coords={recentCoords} />
         </MapContainer>
       </Card>
-      {!isAuthorized && (
-        <div className="flex justify-center mt-4">
-          <Button
-            as={Link}
-            href={`${API_BASE}/authorize`}
-            color="primary"
-            size="md"
-            variant="flat"
-          >
-            Authorize with Strava
-          </Button>
-        </div>
-      )}
       {isAuthorized && !activities && (
         <div className="text-center mt-4">
           Loading activities
