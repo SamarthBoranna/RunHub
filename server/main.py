@@ -139,6 +139,7 @@ def get_activities(user_id):
 
 @app.route("/api/refresh/<int:user_id>")
 def refresh_activities(user_id):
+    """Refresh activities for a user. Only pull the 50 most recent activities."""
     # Find user by ID only (no API key check)
     user = User.query.get(user_id)
     
@@ -398,7 +399,7 @@ def refresh_activities(user_id):
 
 
 def fetch_and_store_activities(athlete_id, access_token, params=None):
-    """Fetch activities from Strava API and store in database"""
+    """Fetch activities from Strava API and store in database, handling all pages."""
     
     # Check if user has any activities in the database
     newest_activity = Activity.query.filter_by(
@@ -423,41 +424,44 @@ def fetch_and_store_activities(athlete_id, access_token, params=None):
             # No activities yet, get everything
             params = {'per_page': 200, 'page': 1}
     
-    # Fetch from Strava API
-    strava_activities = requests.get(activities_url, headers=header, params=params).json()
-    
-    # Filter for runs
-    strava_runs = [activity for activity in strava_activities if activity['type'] == 'Run']
-    
-    # Store in database
     activities_added = 0
-    for run in strava_runs:
-        # Check if activity already exists
-        activity = Activity.query.get(run['id'])
-        if not activity:
-            # Convert ISO string to datetime
-            start_date = datetime.strptime(run['start_date'], '%Y-%m-%dT%H:%M:%SZ')
-            
-            # Create new activity
-            new_activity = Activity(
-                id=run['id'],
-                user_id=athlete_id,
-                name=run['name'],
-                type=run['type'],
-                distance=run['distance'],
-                moving_time=run['moving_time'],
-                elapsed_time=run['elapsed_time'],
-                total_elevation_gain=run.get('total_elevation_gain', 0),
-                start_date=start_date,
-                polyline=run.get('map', {}).get('summary_polyline'),
-                start_latlng=json.dumps(run.get('start_latlng')),
-                end_latlng=json.dumps(run.get('end_latlng')),
-                activity_data=run
-            )
-            db.session.add(new_activity)
-            activities_added += 1
-    
-    # Commit all changes at once
+    page = 1
+    while True:
+        # Update page number for each request
+        params['page'] = page
+        response = requests.get(activities_url, headers=header, params=params)
+        if response.status_code != 200:
+            break
+        strava_activities = response.json()
+        if not strava_activities:
+            break
+        
+        # Filter for runs
+        strava_runs = [activity for activity in strava_activities if activity['type'] == 'Run']
+        
+        for run in strava_runs:
+            activity = Activity.query.get(run['id'])
+            if not activity:
+                start_date = datetime.strptime(run['start_date'], '%Y-%m-%dT%H:%M:%SZ')
+                new_activity = Activity(
+                    id=run['id'],
+                    user_id=athlete_id,
+                    name=run['name'],
+                    type=run['type'],
+                    distance=run['distance'],
+                    moving_time=run['moving_time'],
+                    elapsed_time=run['elapsed_time'],
+                    total_elevation_gain=run.get('total_elevation_gain', 0),
+                    start_date=start_date,
+                    polyline=run.get('map', {}).get('summary_polyline'),
+                    start_latlng=json.dumps(run.get('start_latlng')),
+                    end_latlng=json.dumps(run.get('end_latlng')),
+                    activity_data=run
+                )
+                db.session.add(new_activity)
+                activities_added += 1
+        page += 1
+
     db.session.commit()
     return activities_added
 
@@ -466,6 +470,13 @@ def init_db_command():
     """Initialize the database."""
     db.create_all()
     print("Initialized the database.")
+
+@app.cli.command("delete-all-activities")
+def delete_all_activities():
+    """Delete all activities from the database."""
+    num_deleted = Activity.query.delete()
+    db.session.commit()
+    print(f"Deleted {num_deleted} activities.")
 
 if __name__ == "__main__":
     with app.app_context():
