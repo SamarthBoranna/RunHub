@@ -24,6 +24,7 @@ class User(db.Model):
     
     # Define relationships
     activities = db.relationship('Activity', backref='user', lazy=True, cascade='all, delete-orphan')
+    badges = db.relationship('Badge', secondary='user_badge', back_populates='users')
 
 class Activity(db.Model):
     __tablename__ = 'activities'
@@ -62,3 +63,26 @@ class Activity(db.Model):
     @activity_data.setter
     def activity_data(self, value):
         self.activity_data_text = json.dumps(value) if value else None
+
+class Badge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    description = db.Column(db.String(256), nullable=False)
+    icon = db.Column(db.String(128), nullable=False)
+    criteria_type = db.Column(db.String(64), nullable=False)  # distance, count, streak, etc.
+    criteria_value = db.Column(db.Float, nullable=False)  # threshold value
+
+    # Relationship to users through UserBadge
+    users = db.relationship('User', secondary='user_badge', back_populates='badges')
+
+    def __repr__(self):
+        return f'<Badge {self.name}>'
+
+class UserBadge(db.Model):
+    __tablename__ = 'user_badge'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)  # Change 'user.id' to 'users.id'
+    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), primary_key=True)
+    earned_date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Add unique constraint to prevent duplicate badges
+    __table_args__ = (db.UniqueConstraint('user_id', 'badge_id'),)
