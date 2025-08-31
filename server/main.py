@@ -6,7 +6,7 @@ import requests, os, json
 from datetime import datetime
 import time
 from dotenv import load_dotenv
-from models import db, User, Activity
+from models import db, User, Activity, UserBadge, Badge
 import secrets
 
 # Load environment variables
@@ -397,6 +397,67 @@ def refresh_activities(user_id):
         print(f"Error refreshing activities: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/badges/<int:user_id>")
+def get_user_badges(user_id):
+    """Get badges earned by a user"""
+    user = User.query.get(user_id)
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    badges = []
+    for badge in user.badges:
+        badges.append({
+            "id": badge.id,
+            "name": badge.name,
+            "description": badge.description,
+            "icon": badge.icon,
+            "earned_date": UserBadge.query.filter_by(
+                user_id=user_id, badge_id=badge.id
+            ).first().earned_date.isoformat()
+        })
+    
+    return jsonify(badges)
+
+@app.route("/api/badges/evaluate/<int:user_id>")
+def evaluate_badges_endpoint(user_id):
+    """Endpoint to manually trigger badge evaluation"""
+    result = evaluate_user_badges(user_id)
+    return jsonify(result)
+
+def evaluate_user_badges(user_id):
+    """Evaluate and award badges for a user based on their activities"""
+    user = User.query.get(user_id)
+    if not user:
+        return {"error": "User not found"}
+    
+    activities = Activity.query.filter_by(user_id=user_id, type='Run').all()
+    
+    # Get all badges definitions
+    badges = Badge.query.all()
+    badges_awarded = []
+    
+    for badge in badges:
+        # Skip if user already has this badge
+        if badge in user.badges:
+            continue
+            
+        # Evaluate badge criteria
+        if badge.criteria_type == 'run_count':
+            if len(activities) >= badge.criteria_value:
+                user.badges.append(badge)
+                badges_awarded.append(badge.name)
+                
+        elif badge.criteria_type == 'total_distance':
+            total_distance = sum(a.distance for a in activities)
+            if total_distance >= badge.criteria_value:
+                user.badges.append(badge)
+                badges_awarded.append(badge.name)
+                
+        # Add more criteria types as needed
+    
+    db.session.commit()
+    return {"badges_awarded": badges_awarded}
 
 def fetch_and_store_activities(athlete_id, access_token, params=None):
     """Fetch activities from Strava API and store in database, handling all pages."""
@@ -463,6 +524,7 @@ def fetch_and_store_activities(athlete_id, access_token, params=None):
         page += 1
 
     db.session.commit()
+    evaluate_user_badges(athlete_id)
     return activities_added
 
 @app.cli.command("init-db")
@@ -471,12 +533,61 @@ def init_db_command():
     db.create_all()
     print("Initialized the database.")
 
+@app.cli.command("seed-badges")
+def seed_badges_command():
+    """Seed the database with initial badges."""
+    badges = [
+        {
+            "name": "First Run",
+            "description": "Completed your first run",
+            "icon": "one_run.png",
+            "criteria_type": "run_count",
+            "criteria_value": 1
+        },
+        {
+            "name": "10 Runs",
+            "description": "Completed 10 runs",
+            "icon": "ten_runs.png",
+            "criteria_type": "run_count",
+            "criteria_value": 10
+        },
+        {
+            "name": "100 km",
+            "description": "Ran a total of 100 kilometers",
+            "icon": "hundred_kms.png",
+            "criteria_type": "total_distance",
+            "criteria_value": 100000  # in meters
+        },
+        # Add more badges as needed
+    ]
+    
+    for badge_data in badges:
+        # Skip if badge with same name already exists
+        existing = Badge.query.filter_by(name=badge_data["name"]).first()
+        if existing:
+            print(f"Badge '{badge_data['name']}' already exists")
+            continue
+            
+        badge = Badge(**badge_data)
+        db.session.add(badge)
+        print(f"Added badge: {badge_data['name']}")
+    
+    db.session.commit()
+    print("Badges seeded successfully!")
+
 @app.cli.command("delete-all-activities")
 def delete_all_activities():
     """Delete all activities from the database."""
     num_deleted = Activity.query.delete()
     db.session.commit()
     print(f"Deleted {num_deleted} activities.")
+
+@app.cli.command("delete-all-badges")
+def delete_all_badges():
+    """Delete all badges from the database."""
+    num_deleted = Badge.query.delete()
+    db.session.commit()
+    print(f"Deleted {num_deleted} badges.")
 
 if __name__ == "__main__":
     with app.app_context():
