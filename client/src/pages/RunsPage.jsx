@@ -1,5 +1,6 @@
 import ActivitiesCard from "../components/ActivitiesCard";
 import WeeklyMetrics from "../components/WeeklyMetrics";
+import BadgesPreview from "../components/BadgesPreview";
 
 export default function RunsPage() {
   return (
@@ -10,6 +11,7 @@ export default function RunsPage() {
         </div>
         <div className="w-1/3">
           <WeeklyMetrics />
+          <BadgesPreview />
         </div>
       </div>
     </div>
