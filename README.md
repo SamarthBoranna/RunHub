@@ -1,4 +1,4 @@
-# 🏃 RunHub
+# 🏃 RunHub - https://runhub.vercel.app/
 
 A full-stack web app that integrates with the **Strava API** to let users:
 
