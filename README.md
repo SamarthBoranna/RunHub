@@ -28,4 +28,15 @@ Built using **React + Flask**, styled with **TailwindCSS** and **HeroUI** compon
 
 ---
 
+## ☁️ Hosting & Deployment
+
+RunHub is deployed using a **server-client split** architecture:
+
+- **Frontend**: Hosted on **Vercel** for fast, reliable static delivery and automatic CI/CD from GitHub  
+- **Backend**: Deployed on **Render**, running a Flask server that handles API requests and Strava data retrieval  
+- **Database**: **SQLite** on Render for temporary data storage and caching of activity information  
+
+This setup ensures seamless integration between the React frontend and Flask backend while maintaining performance and scalability.
+
+---
 
