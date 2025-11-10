@@ -41,31 +41,6 @@ chat_rate_limits = {}  # {user_id: [list of request timestamps]}
 CHAT_RATE_LIMIT_REQUESTS = 10  # Number of requests allowed
 CHAT_RATE_LIMIT_WINDOW = 60  # Time window in seconds (1 minute)
 
-def check_rate_limit(user_id):
-    """Check if user has exceeded rate limit. Returns (allowed, retry_after_seconds)."""
-    current_time = time.time()
-    
-    # Clean up old entries for this user
-    if user_id in chat_rate_limits:
-        # Remove timestamps older than the time window
-        chat_rate_limits[user_id] = [
-            ts for ts in chat_rate_limits[user_id]
-            if current_time - ts < CHAT_RATE_LIMIT_WINDOW
-        ]
-    else:
-        chat_rate_limits[user_id] = []
-    
-    # Check if limit exceeded
-    if len(chat_rate_limits[user_id]) >= CHAT_RATE_LIMIT_REQUESTS:
-        # Find the oldest request in the current window
-        oldest_request = min(chat_rate_limits[user_id])
-        retry_after = int(CHAT_RATE_LIMIT_WINDOW - (current_time - oldest_request)) + 1
-        return False, retry_after
-    
-    # Add current request timestamp
-    chat_rate_limits[user_id].append(current_time)
-    return True, 0
-
 @app.route("/authorize")
 def authorize():
     url = (
@@ -200,14 +175,14 @@ def chat():
     
     # System prompt for running coach
     system_prompt = """You are a running coach assistant. Answer questions directly and concisely based on the user's activity history.
-
-IMPORTANT RULES:
-- Answer ONLY what is asked. Do not add extra advice, suggestions, or encouragement unless specifically requested.
-- Answer in the same language as the user's question. You must answer in a way that is easy to understand and conversational.
-- Always use min/mi (minutes per mile) as the primary pace unit. You may include min/km in parentheses if helpful, but min/mi should be the default.
-- Be direct and factual. If asked "What was my last run?", just provide the run details without additional commentary.
-- Only provide training advice, suggestions, or encouragement when explicitly asked for it.
-- Keep responses brief and to the point."""
+        IMPORTANT RULES:
+        - Answer ONLY what is asked. Do not add extra advice, suggestions, or encouragement unless specifically requested.
+        - Answer in the same language as the user's question. You must answer in a way that is easy to understand and conversational.
+        - Always use min/mi (minutes per mile) as the primary pace unit. You may include min/km in parentheses if helpful, but min/mi should be the default.
+        - Be direct and factual. If asked "What was my last run?", just provide the run details without additional commentary.
+        - Only provide training advice, suggestions, or encouragement when explicitly asked for it.
+        - Keep responses brief and to the point.
+    """
     
     # Initialize OpenAI client
     openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -526,6 +501,31 @@ def evaluate_badges_endpoint(user_id):
     """Endpoint to manually trigger badge evaluation"""
     result = evaluate_user_badges(user_id)
     return jsonify(result)
+
+def check_rate_limit(user_id):
+    """Check if user has exceeded rate limit. Returns (allowed, retry_after_seconds)."""
+    current_time = time.time()
+    
+    # Clean up old entries for this user
+    if user_id in chat_rate_limits:
+        # Remove timestamps older than the time window
+        chat_rate_limits[user_id] = [
+            ts for ts in chat_rate_limits[user_id]
+            if current_time - ts < CHAT_RATE_LIMIT_WINDOW
+        ]
+    else:
+        chat_rate_limits[user_id] = []
+    
+    # Check if limit exceeded
+    if len(chat_rate_limits[user_id]) >= CHAT_RATE_LIMIT_REQUESTS:
+        # Find the oldest request in the current window
+        oldest_request = min(chat_rate_limits[user_id])
+        retry_after = int(CHAT_RATE_LIMIT_WINDOW - (current_time - oldest_request)) + 1
+        return False, retry_after
+    
+    # Add current request timestamp
+    chat_rate_limits[user_id].append(current_time)
+    return True, 0
 
 def evaluate_user_badges(user_id):
     """Evaluate and award badges for a user based on their activities"""
