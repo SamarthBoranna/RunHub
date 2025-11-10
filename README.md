@@ -6,6 +6,7 @@ A full-stack web app that integrates with the **Strava API** to let users:
 - 🏃‍♂️ View recent running activities
 - 📍 See heatmaps of their runs
 - 🏅 Earn badges for accomplishments
+- 💬 Chat with an AI assistant for insights and answers about your running history
 
 Built using **React + Flask**, styled with **TailwindCSS** and **HeroUI** components.
 
@@ -17,6 +18,7 @@ Built using **React + Flask**, styled with **TailwindCSS** and **HeroUI** compon
 - **Recent Activities Page**: View client-side paginated list of your recent runs
 - **Interactive UI**: Built with HeroUI and TailwindCSS
 - **React Context**: Utilizing React context to cache/share information and limit repeated API requests
+- **AI Chatbot Integration**: A built-in chatbot powered by the **OpenAI API** that analyzes your running data, answers questions, and provides personalized insights based on your activity history
 
 ---
 
