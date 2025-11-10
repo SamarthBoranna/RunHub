@@ -7,6 +7,7 @@ import BadgesPage from "./pages/BadgesPage";
 import HeatmapPage from "./pages/HeatmapPage";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
+import ChatWidget from "./components/ChatWidget";
 
 function App() {
   const { setAuthStatus } = useActivities();
@@ -42,6 +43,7 @@ function App() {
         </div>
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   );
 }
