@@ -16,7 +16,7 @@ Built using **React + Flask**, styled with **TailwindCSS** and **HeroUI** compon
 - **OAuth Login**: Secure login with your Strava account
 - **Recent Activities Page**: View client-side paginated list of your recent runs
 - **Interactive UI**: Built with HeroUI and TailwindCSS
-- **React Context**: Utilizing React context to store/share information and limit repeated API requests
+- **React Context**: Utilizing React context to cache/share information and limit repeated API requests
 
 ---
 
